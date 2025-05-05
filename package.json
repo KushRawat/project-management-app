@@ -1,0 +1,12 @@
+{
+  "name": "project-management-root",
+  "private": true,
+  "packageManager": "pnpm@10.10.0",
+  "workspaces": [
+    "apps/*"
+  ],
+  "devDependencies": {
+    "@types/aws-lambda": "8.10.149",
+    "sst": "3.14.11"
+  }
+}

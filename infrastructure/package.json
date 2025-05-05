@@ -1,0 +1,19 @@
+{
+  "name": "project-management-infra",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "sst dev --stage dev --config sst.config.ts",
+    "deploy": "sst deploy --stage prod --config sst.config.ts"
+  },
+  "dependencies": {
+    "better-sqlite3": "^7.6.2",
+    "mysql2": "^2.3.3",
+    "pg": "^8.15.6"
+  },
+  "devDependencies": {
+    "sst": "^3.14.11",
+    "sst-darwin-arm64": "3.14.11",
+    "typescript": "4.9.5"
+  }
+}

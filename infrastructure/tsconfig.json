@@ -1,0 +1,8 @@
+{
+  "extends": "sst/tsconfig.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "resolveJsonModule": true
+  },
+  "include": ["stacks", "sst.config.ts"]
+}
