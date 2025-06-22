@@ -1,12 +1,14 @@
-const site = new sst.aws.StaticSite("Web", {
-  // go up one folder (out of `infrastructure`) into `apps/web`
-  path:         "../apps/web",
+// import { StackContext, NextjsSite } from "@serverless-stack/resources";
 
-  // since `buildCommand` is run _in_ that folder, this will invoke your web package’s build
-  buildCommand: "pnpm build",
+export function WebStack({ stack, app }: StackContext) {
+  const site = new NextjsSite(stack, "Web", {
+    path: "apps/web",
+    environment: {
+      NEXT_PUBLIC_API_URL: stack.outputs.ApiEndpoint,
+      NEXT_PUBLIC_SUPABASE_URL: process.env.SUPABASE_URL!,
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY!,
+    },
+  });
 
-  // after build, Next will emit into `.next` at the root of the web folder
-  buildOutput:  ".next",
-});
-
-export const SiteUrl = site.url;
+  stack.addOutputs({ SiteUrl: site.url });
+}
