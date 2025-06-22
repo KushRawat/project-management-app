@@ -1,11 +1,10 @@
-import NextAuth from "next-auth";
-import { cache } from "react";
-import { authConfig } from "./config";
+import NextAuth from "next-auth"
+import CredentialsProvider from "next-auth/providers/credentials"
 
-// NextAuth returns an `auth` handler plus helpers if you need them.
-// We wrap it in a cache so it’s stable across HMR.
-const { auth: _auth, handlers, signIn, signOut } = NextAuth(authConfig);
-export const auth = cache(_auth);
+export const authOptions = {
+  providers: [ /* … */ ],
+  secret: process.env.NEXTAUTH_SECRET,
+  // etc
+}
 
-// (optional) re-export helpers if you use them elsewhere
-export { handlers, signIn, signOut };
+export default NextAuth(authOptions)
