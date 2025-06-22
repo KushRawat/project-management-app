@@ -1,35 +1,31 @@
-// prisma/schema.prisma
-
 generator client {
   provider = "prisma-client-js"
+  engineType = "binary"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DIRECT_URL")
 }
 
-// ──────────────────────────────────────────────────
-// NEXTAUTH.JS MODELS
-// ──────────────────────────────────────────────────
+// — NextAuth models —
 
 model Account {
-  id                 String  @id @default(cuid())
-  userId             String
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String? // @db.Text
-  access_token       String? // @db.Text
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String? // @db.Text
-  session_state      String?
-  refresh_token_expires_in Int?
+  id                        String   @id @default(cuid())
+  userId                    String
+  type                      String
+  provider                  String
+  providerAccountId         String
+  refresh_token             String?
+  access_token              String?
+  expires_at                Int?
+  token_type                String?
+  scope                     String?
+  id_token                  String?
+  session_state             String?
+  refresh_token_expires_in  Int?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
   @@unique([provider, providerAccountId])
 }
 
@@ -46,58 +42,21 @@ model VerificationToken {
   identifier String
   token      String   @unique
   expires    DateTime
-
   @@unique([identifier, token])
 }
 
+// — app models — 
+
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
+  id             String            @id @default(cuid())
+  name           String?
+  email          String?           @unique
+  emailVerified  DateTime?
+  image          String?
 
-  // NextAuth relations
-  accounts      Account[]
-  sessions      Session[]
-
-  // Domain relations
-  profile             Profile?
-  projectMemberships  ProjectMember[]
-  taskAssignments     TaskAssignment[]
-}
-
-// ──────────────────────────────────────────────────
-// DOMAIN MODELS
-// ──────────────────────────────────────────────────
-
-model Profile {
-  id        String   @id @default(uuid())
-  userId    String   @unique
-  bio       String?
-  createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model Project {
-  id          String          @id @default(uuid())
-  name        String
-  description String?
-  createdAt   DateTime        @default(now())
-
-  members     ProjectMember[]
-  tasks       Task[]
-}
-
-model ProjectMember {
-  user      User    @relation(fields: [userId], references: [id])
-  userId    String
-  project   Project @relation(fields: [projectId], references: [id])
-  projectId String
-  role      String  @default("member")
-
-  @@id([userId, projectId])
+  accounts       Account[]
+  sessions       Session[]
+  assignments    TaskAssignment[]   // join to tasks
 }
 
 model Task {
@@ -105,22 +64,22 @@ model Task {
   title       String
   description String?
   status      String           @default("todo")
-  priority    Int              @default(3)
   dueDate     DateTime?
+  startDate   DateTime?
+  endDate     DateTime?
+  priority    Int              @default(1)
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
 
-  project     Project          @relation(fields: [projectId], references: [id])
-  projectId   String
-
-  assignments TaskAssignment[]
+  assignments TaskAssignment[] // join to users
 }
 
 model TaskAssignment {
-  task   Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
   taskId String
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@id([taskId, userId])
 }
